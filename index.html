@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Melike’nin Işığı</title>
+  <style>
+    body {
+      margin: 0;
+      background: url('galaksi.png') repeat;
+      background-size: cover;
+      overflow: hidden;
+      font-family: 'Georgia', serif;
+      color: #fff;
+      height: 100vh;
+      animation: spaceTravel 60s linear infinite;
+    }
+
+    @keyframes spaceTravel {
+      from { background-position: 0 0; }
+      to { background-position: -2000px 1000px; }
+    }
+
+    .stars {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: white;
+      border-radius: 50%;
+      animation: twinkle 2s infinite ease-in-out, drift 30s linear infinite;
+    }
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+    @keyframes drift {
+      from { transform: translateY(0); }
+      to { transform: translateY(-100vh); }
+    }
+
+    /* Metinler */
+    .text-box {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 3em;
+      text-align: center;
+      opacity: 0;
+      text-shadow: 0 0 25px rgba(255,255,255,0.9);
+    }
+    #text1 { top: 35%; }
+    #text2 { top: 45%; }
+    #text3 { top: 55%; }
+
+    .visible { opacity: 1; transition: opacity 2s ease; }
+    .hidden { opacity: 0; transition: opacity 1s ease; }
+
+    .dim {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.0);
+      transition: background 1.8s ease;
+      pointer-events: none;
+    }
+    .dim.active { background: rgba(0,0,0,0.35); }
+
+    /* Fotoğraf sahneye giriş efekti */
+    .photo-wrap {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%) scale(0.95);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 2s ease, transform 2s ease;
+    }
+    .photo-wrap.show {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+      animation: glow 2.5s ease-in-out 1, zoomToEyes 8s ease-in forwards;
+    }
+
+    /* Renkli ışık patlaması */
+    .flash {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle,
+        rgba(255,255,255,1) 0%,
+        rgba(173,216,230,0.8) 30%,
+        rgba(255,105,180,0.7) 50%,
+        rgba(138,43,226,0.6) 70%,
+        rgba(255,255,255,0) 100%);
+      opacity: 0;
+      pointer-events: none;
+    }
+    .flash.active {
+      animation: flashAnim 2s ease-out forwards;
+    }
+    @keyframes flashAnim {
+      0% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.8; transform: scale(1.8); }
+      100% { opacity: 0; transform: scale(2.5); }
+    }
+
+    @keyframes glow {
+      0%   { filter: drop-shadow(0 0 0 rgba(255,255,255,0)); }
+      50%  { filter: drop-shadow(0 0 60px rgba(255,255,255,1)); }
+      100% { filter: drop-shadow(0 0 25px rgba(255,255,255,0.6)); }
+    }
+
+    @keyframes zoomToEyes {
+      0% { transform: translate(-50%, -50%) scale(1); }
+      100% { transform: translate(-50%, -50%) scale(6); opacity: 0; }
+    }
+
+    .photo {
+      max-width: min(80vw, 520px);
+      max-height: 70vh;
+      border-radius: 12px;
+    }
+
+    /* SON yazısı */
+    .end-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 4em;
+      color: #fff;
+      opacity: 0;
+      text-shadow: 0 0 30px rgba(255,255,255,0.9);
+      transition: opacity 2s ease;
+    }
+    .end-text.show {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="stars" id="stars"></div>
+
+  <div id="text1" class="text-box">Efendim, bunu yapamazsınız!</div>
+  <div id="text2" class="text-box">Melike bu evrenin içindeki…</div>
+  <div id="text3" class="text-box">…en güzel varlık.</div>
+
+  <div id="dim" class="dim"></div>
+
+  <div id="photoWrap" class="photo-wrap">
+    <img id="photo" class="photo" src="melike.jpeg" alt="Melike'nin Fotoğrafı">
+  </div>
+
+  <div id="flash" class="flash"></div>
+
+  <audio id="music" src="piyano.mp3" autoplay></audio>
+
+  <!-- SON yazısı -->
+  <div id="endText" class="end-text">Son ❤️</div>
+
+  <script>
+    const starsContainer = document.getElementById("stars");
+    for (let i = 0; i < 120; i++) {
+      const star = document.createElement("div");
+      star.className = "star";
+      star.style.top = Math.random() * 100 + "%";
+      star.style.left = Math.random() * 100 + "%";
+      star.style.animationDelay = (Math.random() * 5) + "s";
+      starsContainer.appendChild(star);
+    }
+
+    const textIds = ["text1", "text2", "text3"];
+    const step = 3000;
+    textIds.forEach((id, i) => {
+      setTimeout(() => {
+        const el = document.getElementById(id);
+        el.classList.add("visible");
+        setTimeout(() => {
+          el.classList.remove("visible");
+          el.classList.add("hidden");
+        }, step - 1000);
+      }, i * step);
+    });
+
+    const afterTextDelay = textIds.length * step + 500;
+    setTimeout(() => {
+      document.getElementById("dim").classList.add("active");
+      document.getElementById("photoWrap").classList.add("show");
+      document.getElementById("flash").classList.add("active");
+
+      // Fotoğraf zoom tamamlandıktan sonra SON yazısı gösterilsin
+      setTimeout(() => {
+        document.getElementById("endText").classList.add("show");
+      }, 8000); // zoom süresiyle eşleşiyor
+    }, afterTextDelay);
+  </script>
+
+</body>
+</html>

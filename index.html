@@ -44,7 +44,6 @@
       to { transform: translateY(-100vh); }
     }
 
-    /* Metinler */
     .text-box {
       position: absolute;
       left: 50%;
@@ -70,7 +69,6 @@
     }
     .dim.active { background: rgba(0,0,0,0.35); }
 
-    /* Fotoğraf sahneye giriş efekti */
     .photo-wrap {
       position: absolute;
       left: 50%;
@@ -88,7 +86,6 @@
       animation: glow 2.5s ease-in-out 1, zoomToEyes 8s ease-in forwards;
     }
 
-    /* Renkli ışık patlaması */
     .flash {
       position: absolute;
       inset: 0;
@@ -127,7 +124,6 @@
       border-radius: 12px;
     }
 
-    /* SON yazısı */
     .end-text {
       position: absolute;
       top: 50%;
@@ -150,7 +146,7 @@
 
   <div id="text1" class="text-box">Efendim, bunu yapamazsınız!</div>
   <div id="text2" class="text-box">Melike bu evrenin içindeki…</div>
-  <div id="text3" class="text-box">…en güzel varlık.</div>
+  <div id="text3" class="text-box">…en güzel varlık 👑</div>
 
   <div id="dim" class="dim"></div>
 
@@ -160,9 +156,8 @@
 
   <div id="flash" class="flash"></div>
 
-  <audio id="music" src="piyano.mp3" autoplay></audio>
+  <audio id="music" src="piyano.mp3"></audio>
 
-  <!-- SON yazısı -->
   <div id="endText" class="end-text">Son ❤️</div>
 
   <script>
@@ -195,11 +190,32 @@
       document.getElementById("photoWrap").classList.add("show");
       document.getElementById("flash").classList.add("active");
 
-      // Fotoğraf zoom tamamlandıktan sonra SON yazısı gösterilsin
       setTimeout(() => {
         document.getElementById("endText").classList.add("show");
-      }, 8000); // zoom süresiyle eşleşiyor
+
+        // 🎶 Fade-out başlat
+        const music = document.getElementById("music");
+        let fadeInterval = setInterval(() => {
+          if (music.volume > 0.05) {
+            music.volume -= 0.05;
+          } else {
+            music.pause();
+            music.currentTime = 0;
+            clearInterval(fadeInterval);
+          }
+        }, 300);
+      }, 8000); // Son yazısı göründüğü anda fade-out başlar
     }, afterTextDelay);
+
+    // 🎶 Müzik başlatma: sayfa yüklenince dene, engellenirse ilk tıklamada başlat
+    const music = document.getElementById("music");
+    window.addEventListener("load", () => {
+      music.play().catch(() => {
+        document.body.addEventListener("click", () => {
+          music.play();
+        }, { once: true });
+      });
+    });
   </script>
 
 </body>
